@@ -128,6 +128,9 @@ $ python test/test.py
 ('mysubpkg2_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\mysubpkg2\\main.cp35-win_amd64.pyd')
 ```
 
-## Thoughts
+One thing I'm left wondering is regarding all the `__init__.py` files that might contain some logic.
+Can I compile `__init__.py` files if they contain logic ?
 
-No __init__.py means if you have logic in them, does it end up being compiled ?
+NEXT: Add a print() logic to all __init__ files and see what happens
+
+## Thoughts
