@@ -1,39 +1,48 @@
 #!/usr/bin/env python
 from setuptools import setup
 from setuptools.extension import Extension
+from distutils.dir_util import remove_tree
 from pathlib import Path
 import shutil
+from glob import glob
+import os
 
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
-ext_modules = cythonize([
-    Extension("mypkg.*", ["mypkg/*.py"]),
-    ],
+def cleanup_build_outputs():
+    try:
+        remove_tree('./build')
+    except:
+        pass
+
+    try:
+        remove_tree('./dist')
+    except:
+        pass
+
+def scan_sources(root_dir):
+    '''
+    Scans the entire folder, retrieving all python files except
+    __init__ files (see PROCESS.md step 1).
+    '''
+    scan_root = os.path.join(root_dir, '**.py')
+    print('Scanning files in ', scan_root)
+    files = glob(scan_root)
+    files = [f for f in files if os.path.basename(f) != '__init__.py']
+    print('Detected for compilation:', files)
+    return files
+
+
+# For removing build/dist folders (to have a clean build env everytime)
+cleanup_build_outputs()
+
+ext_modules = cythonize(scan_sources('mypkg'),
     build_dir="build",
     compiler_directives = {
         'always_allow_keywords': True
     }
 )
-
-'''
-class MyBuildExt(build_ext):
-    def run(self):
-        build_ext.run(self)
-
-        build_dir = Path(self.build_lib)
-        root_dir = Path(__file__).parent
-
-        target_dir = build_dir if not self.inplace else root_dir
-
-        self.copy_file(Path('mypkg') / '__init__.py', root_dir, target_dir)
-
-    def copy_file(self, path, source_dir, destination_dir):
-        if not (source_dir / path).exists():
-            return
-
-        shutil.copyfile(str(source_dir / path), str(destination_dir / path))
-'''
 
 setup(
     name='mypkg',
