@@ -9,7 +9,9 @@ harder to figure out what it is doing.
 The requirements was to setup a build process that does not need to change the
 python codebase.
 
-See [PROCESS.md](./PROCESS.md) for details about how I came to the final version of the setup.py 
+See [PROCESS.md](./PROCESS.md) for details about how I came to the final version of the setup.py
+
+Greatly inspired by [this article](https://bucharjan.cz/blog/using-cython-to-protect-a-python-codebase.html) from Jan Buchar 
 
 # Utilisation
 
