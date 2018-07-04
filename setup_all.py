@@ -26,9 +26,16 @@ def scan_sources(root_dir):
     Scans the entire folder, retrieving all python files except
     __init__ files (see PROCESS.md step 1).
     '''
-    scan_root = os.path.join(root_dir, '**.py')
+    # Search in root dir
+    scan_root = os.path.join(root_dir, '*.py')
     print('Scanning files in ', scan_root)
     files = glob(scan_root)
+
+    # Search in sub-dirs
+    scan_root = os.path.join(root_dir, '**' , '*.py')
+    print('Scanning files in ', scan_root)
+    files += glob(scan_root)
+
     files = [f for f in files if os.path.basename(f) != '__init__.py']
     print('Detected for compilation:', files)
     return files
