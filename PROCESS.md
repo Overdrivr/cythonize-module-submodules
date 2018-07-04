@@ -64,3 +64,35 @@ ImportError: No module named 'mypkg.mysubpkg1'
 Turns out the subpackages cannot be imported, which makes sense because obviously they are not copied inside the wheel file (see screen above).
 
 NEXT: Back to the `setup_all.py` file to try to include subpackages
+
+# Step 4 - Compile all the things - Commit 29ae47ad9ab973c557b89d7e094a10eca2dd6668
+
+In this step, I just fixed the scan_sources function to detect all python files recursively, not just the ones located at top directory.
+
+The generated wheel file is much more like I expected:
+
+![](./screens/screen_2.PNG)
+
+It contains the submodules folders, each containing a .pyd file (cythonized python file).
+There is an `__init__.py` at top level, meaning top level module can be importable.
+
+There is still a couple of things not right:
+
+1. No `__init__.py` inside submodules, meaning that mypkg.mysubpkg1 for instance should not be importable
+2. `main.py` file at root directory containing raw python sources
+
+However, to my great surprise, this packaged version can run successfully !
+
+```
+$ python test/test.py
+('mypkg_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\main.cp35-win_amd64.pyd')
+('mysubpkg1_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\mysubpkg1\\main.cp35-win_amd64.pyd')
+('mysubpkg2_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\mysubpkg2\\main.cp35-win_amd64.pyd')
+```
+
+Turns out I was wrong regarding 1. In Python 3.3+, it is no longer required to have an `__init__.py` file, therefore the submodules are importables.
+We can see from the logs that the code is running from a cythonized file (.pyd), even the main file that is available inside the wheel file both as a .py and .pyd file.
+
+Because our goal is to make reverse-engineering harder, let's try to remove the .py file from the wheel that seems is not even used by python.
+
+NEXT: Back to setup_all.py to find a way to remove main.py file !
