@@ -58,7 +58,7 @@ setup(
     author='Remi Beges',
     author_email='remi.beges@gmail.com',
     url='https://github.com/Overdrivr/cythonize-module-submodules/',
-    packages=['mypkg'],
+    packages=[],
     ext_modules = ext_modules,
     cmdclass = {
         'build_ext': build_ext
