@@ -35,6 +35,6 @@ python setup_all.py bdist_wheel
 ## Testing it
 
 ```
-pip install wheel_file
+pip install dist/mypkg-0.1.0-cp35-cp35m-win_amd64.whl
 python test.py
 ```
