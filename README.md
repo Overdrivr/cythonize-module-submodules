@@ -6,6 +6,11 @@ Indeed, after compiling it with cython, the generated archive no-longer contains
 python code, and requires a tedious deassembly step that will make it marginally
 harder to figure out what it is doing.
 
+The requirements was to setup a build process that does not need to change the
+python codebase.
+
+See [PROCESS.md](./PROCESS.md) for details about how I came to the final version of the setup.py 
+
 # Utilisation
 
 It is recommended to test this in a virtual environment.

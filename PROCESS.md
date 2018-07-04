@@ -103,7 +103,7 @@ Because our goal is to make reverse-engineering harder, let's try to remove the 
 
 NEXT: Back to setup_all.py to find a way to remove main.py file !
 
-## Step 5
+## Step 5 - Removing last python files from wheel - Commit ca0b1c6f1d242ef2a6734428903294c1b56d4060
 
 Found the solution from [here](https://bucharjan.cz/blog/using-cython-to-protect-a-python-codebase.html)
 The fix is very simple, just remove `mypkg` from the `packages` entry in setup.py.
@@ -133,4 +133,34 @@ Can I compile `__init__.py` files if they contain logic ?
 
 NEXT: Add a print() logic to all __init__ files and see what happens
 
-## Thoughts
+## Step 6 - Copying missing __init__ files - Commit 0de6c156014c2698dd71f0ef8114e763142cc471
+
+It does not seem possible to compile __init__ files, it always result in linking errors.
+However, it is perfectly doable to copy them after the build step.
+For this, we customize the build_ext function from Cython.
+
+The generated wheel file looks like this:
+
+![](./screens/screen_4.PNG)
+
+It contains all the same .pyd files from before + the __init__ files
+
+After reinstalling the software, running it produces this result:
+
+```
+$ python test/test.py
+Root __init__.py file loaded
+mysubpkg1 __init__.py file loaded
+mysubpkg2 __init__.py file loaded
+('mypkg_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\main.cp35-win_amd64.pyd')
+('mysubpkg1_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\mysubpkg1\\main.cp35-win_amd64.pyd')
+('mysubpkg2_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\mysubpkg2\\main.cp35-win_amd64.pyd')
+```
+
+## Conclusion
+
+Using this `setup_all.py` file, it is possible to compile and entire package and subpackages, in order to make reverse-engineering harder, and without touching the python codebase.
+
+Remember that the generated wheel is now locked to a given version/architecture of python (3.5/64 bits in my case), and os. Therefore, to install this on various machines, it is required to build it on different platforms.
+
+Using tools like CI are the key to automating this annoying process
