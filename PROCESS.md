@@ -1,5 +1,11 @@
 # Research process to achieve successful compilation and packaging
 
+The goal of this document is to keep track of what was done to compile a pure python package into a compiled python package.
+
+When I say compiled, I don't mean turned into some .pyc files that still contain the original code.
+
+I mean **true compilation** that results in turning python code into assembly code, and making reverse-engineering as hard as if it were written in C.
+
 ## Step 1 - Commit 8180d914c8a211ce051104b78114af542e81b5f3
 
 Fails with the following message:
@@ -96,3 +102,32 @@ We can see from the logs that the code is running from a cythonized file (.pyd),
 Because our goal is to make reverse-engineering harder, let's try to remove the .py file from the wheel that seems is not even used by python.
 
 NEXT: Back to setup_all.py to find a way to remove main.py file !
+
+## Step 5
+
+Found the solution from [here](https://bucharjan.cz/blog/using-cython-to-protect-a-python-codebase.html)
+The fix is very simple, just remove `mypkg` from the `packages` entry in setup.py.
+
+Resulting wheel file:
+
+![](./screens/screen_3.PNG)
+
+After reinstalling the package
+
+```
+pip uninstall mypkg
+pip install dist/mypkg-0.1.0-cp35-cp35m-win_amd64.whl
+```
+
+Runs perfectly fine:
+
+```
+$ python test/test.py
+('mypkg_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\main.cp35-win_amd64.pyd')
+('mysubpkg1_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\mysubpkg1\\main.cp35-win_amd64.pyd')
+('mysubpkg2_fn called. Value of __file__:', 'C:\\Users\\remib\\Miniconda3\\envs\\cython\\lib\\site-packages\\mypkg\\mysubpkg2\\main.cp35-win_amd64.pyd')
+```
+
+## Thoughts
+
+No __init__.py means if you have logic in them, does it end up being compiled ?
