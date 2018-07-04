@@ -1,0 +1,19 @@
+*.DS_Store
+*.pyc
+*.swp
+*.egg-info
+build/
+examples/out/*
+!examples/README.md
+venv
+MANIFEST
+dist/
+mydata/
+scripts/src/
+
+# pytest cache
+.cache
+.pytest_cache
+
+# Python folders
+__pycache__/
