@@ -36,7 +36,7 @@ def scan_sources(root_dir):
     print('Scanning files in ', scan_root)
     files += glob(scan_root)
 
-    files = [f for f in files if os.path.basename(f) != '__init__.py']
+    #files = [f for f in files if os.path.basename(f) != '__init__.py']
     print('Detected for compilation:', files)
     return files
 
