@@ -36,3 +36,31 @@ mysubpkg2_fn called
 Each module is properly called. It looks like the submodules were properly compiled. WEIRD.
 
 NEXT : Modifying package code to determine if running from python or compiled sources
+
+## Step 3 - Bitten in the butt by python import system - Commit d8aaf5fcd5825a73139ab689402c12f502c7623c
+
+Printing `__file__` inside each python source file revealed that calling `test.py` was simply calling the original python sources, not the binary wheel-installed version of the program. Silly error.
+
+```
+mypkg_fn called. Value of __file__: C:\Users\remib\Github\cythonize-module-submodules\mypkg\main.py
+mysubpkg1_fn called. Value of __file__: C:\Users\remib\Github\cythonize-module-submodules\mypkg\mysubpkg1\main.py
+mysubpkg2_fn called. Value of __file__: C:\Users\remib\Github\cythonize-module-submodules\mypkg\mysubpkg2\main.py
+```
+
+Basically, the `test.py` file located at the root of the directory could load the python sources since mypkg was simply located in the same directory. Moving the `test.py` file to a `./test` folder prevented this.
+
+Now, I do get a more interesting error running the python test file:
+
+```
+$ python test/test.py
+Traceback (most recent call last):
+  File "test/test.py", line 1, in <module>
+    from mypkg.main import mypkg_fn
+  File "mypkg\main.py", line 1, in init mypkg.main
+    from mypkg.mysubpkg1.main import *
+ImportError: No module named 'mypkg.mysubpkg1'
+```
+
+Turns out the subpackages cannot be imported, which makes sense because obviously they are not copied inside the wheel file (see screen above).
+
+NEXT: Back to the `setup_all.py` file to try to include subpackages
